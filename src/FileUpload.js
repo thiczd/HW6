@@ -1,5 +1,10 @@
 import React, { Component } from "react";
 
+//////////////////////////////////////////////////
+// TODO : MODIFY THIS FILE TO PARSE DATA FROM DATA/TEST.CSV --> DONE
+// TRANSFER DATA INTO CHILD1, MAKE SURE ITS RECEIVED PROPERLY
+/////////////////////////////////////////////////
+
 class FileUpload extends Component {
   constructor(props) {
     super(props);
@@ -37,20 +42,21 @@ class FileUpload extends Component {
       // Map each column value to the corresponding header
       headers.forEach((header, index) => {
         obj[header.trim()] = currentLine[index]?.trim(); // Trim to remove spaces
+        console.log(header.trim());
       });
 
       // Add object to result if it's not an empty row
       if (Object.keys(obj).length && lines[i].trim()) {
         const parsedObj = {
-          Date: new Date(obj.Date),
-          Company: obj.Company,
-          Open: parseFloat(obj.Open),
-          High: parseFloat(obj.High),
-          Low: parseFloat(obj.Low),
-          Close: parseFloat(obj.Close),
-          AdjClose: parseFloat(obj["Adj Close"]),
-          Volume: parseInt(obj.Volume, 10),
+          Date: new Date(obj["Date"]), // Use bracket notation for these properties
+          Claude: parseInt(obj["Claude"]),
+          GPT4: parseInt(obj["GPT-4"]), // Use bracket notation for "GPT-4"
+          Gemini: parseInt(obj["Gemini"]),
+          LLaMA: parseInt(obj["LLaMA-3.1"]),
+          PaLM: parseInt(obj["PaLM-2"]),
         };
+        console.log(parsedObj);
+
         result.push(parsedObj);
       }
     }

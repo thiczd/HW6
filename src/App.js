@@ -181,6 +181,7 @@ class App extends Component {
       <div>
         <FileUpload set_data={this.set_data}></FileUpload>
         <div className="parent">
+          {/* TODO : use data from fileUpload  */}
           {/* <Child1 csv_data={this.state.data}></Child1> */}
         </div>
       </div>
