@@ -28,20 +28,20 @@ class Child1 extends Component {
       ...item,
       Date: parseDate(item.Date), // Parse the date as-is
     }));
-    const margin = { top: 20, right: 30, bottom: 40, left: 40 },
+    const margin = { top: 30, right: 30, bottom: 50, left: 40 },
       width = 700,
       height = 400,
       innerWidth = 600 - margin.left - margin.right,
       innerHeight = 400 - margin.top - margin.bottom;
     // Extract the date range for xScale
     const dateExtent = d3.extent(data, (d) => d.Date);
+    console.log(dateExtent);
     // TODO CENTER THE CHART USING MARGIN
     // TODO LEGEND
     const maxSum = d3.sum([
-      d3.max(data, (d) => d.GPT4),
+      d3.max(data, (d) => d.GPT),
       d3.max(data, (d) => d.Gemini),
       d3.max(data, (d) => d.PaLM),
-
       d3.max(data, (d) => d.Claude),
       d3.max(data, (d) => d.LLaMA),
     ]);
@@ -53,7 +53,7 @@ class Child1 extends Component {
     var colors = ["#e41a1c", "#377eb8", "#4daf4a", "#984ea3", "#ff7f00"];
     var stack = d3
       .stack()
-      .keys(["GPT4", "Gemini", "PaLM", "Claude", "LLaMA"])
+      .keys(["GPT", "Gemini", "PaLM", "Claude", "LLaMA"])
       .offset(d3.stackOffsetWiggle);
     var stackedSeries = stack(data);
     var areaGenerator = d3
@@ -73,7 +73,7 @@ class Child1 extends Component {
       .data([null])
       .join("g")
       .attr("class", "x axis")
-      .attr("transform", `translate(0,${innerHeight})`)
+      .attr("transform", `translate(0,${height - 20})`)
       .call(d3.axisBottom(xScale));
   };
 

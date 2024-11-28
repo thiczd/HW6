@@ -50,7 +50,7 @@ class FileUpload extends Component {
         const parsedObj = {
           Date: obj["Date"], // Use bracket notation for these properties
           Claude: parseInt(obj["Claude"]),
-          GPT4: parseInt(obj["GPT-4"]), // Use bracket notation for "GPT-4"
+          GPT: parseInt(obj["GPT-4"]), // Use bracket notation for "GPT-4"
           Gemini: parseInt(obj["Gemini"]),
           LLaMA: parseInt(obj["LLaMA-3.1"]),
           PaLM: parseInt(obj["PaLM-2"]),
