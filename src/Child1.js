@@ -28,14 +28,14 @@ class Child1 extends Component {
       ...item,
       Date: parseDate(item.Date), // Parse the date as-is
     }));
-    const margin = { top: 30, right: 30, bottom: 50, left: 40 },
-      width = 700,
+    console.log(data);
+
+    const margin = { top: 30, right: 30, bottom: 50, left: 10 },
+      width = 500,
       height = 400,
-      innerWidth = 600 - margin.left - margin.right,
-      innerHeight = 400 - margin.top - margin.bottom;
-    // Extract the date range for xScale
-    const dateExtent = d3.extent(data, (d) => d.Date);
-    console.log(dateExtent);
+      innerWidth = width - margin.left - margin.right,
+      innerHeight = height - margin.top - margin.bottom;
+
     // TODO CENTER THE CHART USING MARGIN
     // TODO LEGEND
     const maxSum = d3.sum([
@@ -47,7 +47,7 @@ class Child1 extends Component {
     ]);
     var xScale = d3
       .scaleTime()
-      .domain(d3.extent(dateExtent))
+      .domain(d3.extent(data, (d) => d.Date))
       .range([0, innerWidth]);
     var yScale = d3.scaleLinear().domain([0, maxSum]).range([innerHeight, 0]);
     var colors = ["#e41a1c", "#377eb8", "#4daf4a", "#984ea3", "#ff7f00"];
@@ -62,19 +62,97 @@ class Child1 extends Component {
       .y0((d) => yScale(d[0]))
       .y1((d) => yScale(d[1]))
       .curve(d3.curveCardinal);
-    d3.select(".container")
+    var svg = d3.select(".container");
+
+    svg
       .selectAll("path")
       .data(stackedSeries)
       .join("path")
       .style("fill", (d, i) => colors[i])
       .attr("d", (d) => areaGenerator(d));
-    d3.select(".container")
+    svg
       .selectAll(".x.axis")
       .data([null])
       .join("g")
       .attr("class", "x axis")
       .attr("transform", `translate(0,${height - 20})`)
-      .call(d3.axisBottom(xScale));
+      .call(d3.axisBottom(xScale).tickFormat(d3.timeFormat("%b"))); // Formats as month name
+
+    //keys(["GPT", "Gemini", "PaLM", "Claude", "LLaMA"])
+
+    svg
+      .append("rect")
+      .attr("x", innerWidth + margin.left + margin.right)
+      .attr("y", 50)
+      .attr("width", 20)
+      .attr("height", 20)
+      .attr("stroke", "black")
+      .attr("fill", "#e41a1c");
+
+    svg
+      .append("text")
+      .text("GPT-4")
+      .attr("x", innerWidth + margin.left + margin.right + 30)
+      .attr("y", 65);
+
+    svg
+      .append("rect")
+      .attr("x", innerWidth + margin.left + margin.right)
+      .attr("y", 80)
+      .attr("width", 20)
+      .attr("height", 20)
+      .attr("stroke", "black")
+      .attr("fill", "#377eb8");
+
+    svg
+      .append("text")
+      .text("Gemini")
+      .attr("x", innerWidth + margin.left + margin.right + 30)
+      .attr("y", 95);
+
+    svg
+      .append("rect")
+      .attr("x", innerWidth + margin.left + margin.right)
+      .attr("y", 110)
+      .attr("width", 20)
+      .attr("height", 20)
+      .attr("stroke", "black")
+      .attr("fill", "#4daf4a");
+
+    svg
+      .append("text")
+      .text("PaLM-2")
+      .attr("x", innerWidth + margin.left + margin.right + 30)
+      .attr("y", 125);
+
+    svg
+      .append("rect")
+      .attr("x", innerWidth + margin.left + margin.right)
+      .attr("y", 140)
+      .attr("width", 20)
+      .attr("height", 20)
+      .attr("stroke", "black")
+      .attr("fill", "#984ea3");
+
+    svg
+      .append("text")
+      .text("Claude")
+      .attr("x", innerWidth + margin.left + margin.right + 30)
+      .attr("y", 155);
+    svg
+      .append("rect")
+      .attr("x", innerWidth + margin.left + margin.right)
+      .attr("y", 170)
+      .attr("width", 20)
+      .attr("height", 20)
+      .attr("stroke", "black")
+      .attr("fill", "#ff7f00");
+
+    svg
+      .append("text")
+      .text("LLaMA-3.1")
+      .attr("x", innerWidth + margin.left + margin.right + 30)
+      .attr("y", 185);
   };
 
   render() {
