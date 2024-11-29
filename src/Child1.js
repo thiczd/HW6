@@ -16,16 +16,14 @@ class Child1 extends Component {
   }
 
   destroyChart = () => {
-    // Completely clear the SVG by removing all child elements
     d3.select("#mychart").selectAll("*").remove();
 
-    // Optionally reset the <g> element for consistent structure
     d3.select("#mychart").append("g");
   };
 
   renderChart = () => {
     if (!this.props.csv_data || this.props.csv_data.length === 0) {
-      return; // Exit the function if there's no data
+      return; // Exit the function if there's no data prevent legend and axis to be rendered unnecessarily
     }
     const parseDate = d3.timeParse("%m/%d/%Y"); // Match your input format
     const data = this.props.csv_data.map((item) => ({
