@@ -75,7 +75,15 @@ class Child1 extends Component {
     //// HOVER BAR CHART ////
     //////////////////////////////////////////////////////////
 
-    var tooltip = d3.select(".mychart").append("g");
+    var tooltip = d3
+      .select(".mychart")
+      .select(".bar-chart")
+      .style("visibility", "hidden")
+      .append("rect")
+      .attr("width", 200)
+      .attr("height", 100)
+      .attr("stroke", "black") // Add black border
+      .attr("fill", "white"); // Ensure it's empty (transparent)
 
     ///////////////////////////////////////////////////////////
     //// END HOVER BAR CHART ////
@@ -93,9 +101,11 @@ class Child1 extends Component {
         tooltip.style("visibility", "visible").text(d.key); // Show key of the series
       })
       .on("mousemove", function (event) {
-        tooltip
-          .style("top", `${event.pageY - 10}px`)
-          .style("left", `${event.pageX + 10}px`);
+        const [mouseX, mouseY] = d3.pointer(event); // Get mouse position relative to the SVG
+        tooltip.attr(
+          "transform",
+          `translate(${mouseX + 10}, ${mouseY + 10})` // Offset tooltip to avoid overlapping
+        );
       })
       .on("mouseout", function () {
         tooltip.style("visibility", "hidden");
@@ -204,6 +214,7 @@ class Child1 extends Component {
       <div className="mychart">
         <svg width="700" height="400">
           <g className="container"></g>
+          <g className="bar-chart"></g>
         </svg>
       </div>
     );
