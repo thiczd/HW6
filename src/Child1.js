@@ -23,7 +23,7 @@ class Child1 extends Component {
   };
 
   renderChart = () => {
-    const parseDate = d3.timeParse("%Y-%m-%d"); // Match your input format
+    const parseDate = d3.timeParse("%m/%d/%Y"); // Match your input format
     const data = this.props.csv_data.map((item) => ({
       ...item,
       Date: parseDate(item.Date), // Parse the date as-is
@@ -38,6 +38,11 @@ class Child1 extends Component {
 
     // TODO CENTER THE CHART USING MARGIN
     // TODO LEGEND
+
+    ///////////////////////////////////////////////////////////
+    //// STREAM GRAPH ////
+    //////////////////////////////////////////////////////////
+
     const maxSum = d3.sum([
       d3.max(data, (d) => d.GPT),
       d3.max(data, (d) => d.Gemini),
@@ -53,7 +58,9 @@ class Child1 extends Component {
     var colors = ["#e41a1c", "#377eb8", "#4daf4a", "#984ea3", "#ff7f00"];
     var stack = d3
       .stack()
-      .keys(["GPT", "Gemini", "PaLM", "Claude", "LLaMA"])
+      //      .keys(["GPT", "Gemini", "PaLM", "Claude", "LLaMA"])
+
+      .keys(["LLaMA", "Claude", "PaLM", "Gemini", "GPT"])
       .offset(d3.stackOffsetWiggle);
     var stackedSeries = stack(data);
     var areaGenerator = d3
@@ -64,12 +71,37 @@ class Child1 extends Component {
       .curve(d3.curveCardinal);
     var svg = d3.select(".container");
 
+    ///////////////////////////////////////////////////////////
+    //// HOVER BAR CHART ////
+    //////////////////////////////////////////////////////////
+
+    var tooltip = d3.select(".mychart").append("g");
+
+    ///////////////////////////////////////////////////////////
+    //// END HOVER BAR CHART ////
+    //////////////////////////////////////////////////////////
+
+    // POPULATE DATA + TOOLTIP TUNING
+
     svg
       .selectAll("path")
       .data(stackedSeries)
       .join("path")
       .style("fill", (d, i) => colors[i])
-      .attr("d", (d) => areaGenerator(d));
+      .attr("d", (d) => areaGenerator(d))
+      .on("mouseover", function (event, d) {
+        tooltip.style("visibility", "visible").text(d.key); // Show key of the series
+      })
+      .on("mousemove", function (event) {
+        tooltip
+          .style("top", `${event.pageY - 10}px`)
+          .style("left", `${event.pageX + 10}px`);
+      })
+      .on("mouseout", function () {
+        tooltip.style("visibility", "hidden");
+      });
+
+    // END POPULATING
     svg
       .selectAll(".x.axis")
       .data([null])
@@ -78,7 +110,15 @@ class Child1 extends Component {
       .attr("transform", `translate(0,${height - 20})`)
       .call(d3.axisBottom(xScale).tickFormat(d3.timeFormat("%b"))); // Formats as month name
 
+    ///////////////////////////////////////////////////////////
+    ////END  STREAM GRAPH ////
+    //////////////////////////////////////////////////////////
+
     //keys(["GPT", "Gemini", "PaLM", "Claude", "LLaMA"])
+
+    ///////////////////////////////////////////////////////////
+    //LEGEND//
+    //////////////////////////////////////////////////////////
 
     svg
       .append("rect")
@@ -91,7 +131,7 @@ class Child1 extends Component {
 
     svg
       .append("text")
-      .text("GPT-4")
+      .text("LLaMA-3.1")
       .attr("x", innerWidth + margin.left + margin.right + 30)
       .attr("y", 65);
 
@@ -106,7 +146,7 @@ class Child1 extends Component {
 
     svg
       .append("text")
-      .text("Gemini")
+      .text("Claude")
       .attr("x", innerWidth + margin.left + margin.right + 30)
       .attr("y", 95);
 
@@ -136,7 +176,7 @@ class Child1 extends Component {
 
     svg
       .append("text")
-      .text("Claude")
+      .text("Gemini")
       .attr("x", innerWidth + margin.left + margin.right + 30)
       .attr("y", 155);
     svg
@@ -150,9 +190,13 @@ class Child1 extends Component {
 
     svg
       .append("text")
-      .text("LLaMA-3.1")
+      .text("GPT-4")
       .attr("x", innerWidth + margin.left + margin.right + 30)
       .attr("y", 185);
+
+    ///////////////////////////////////////////////////////////
+    // END LEGEND//
+    //////////////////////////////////////////////////////////
   };
 
   render() {
