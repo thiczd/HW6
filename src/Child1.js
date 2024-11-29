@@ -60,7 +60,7 @@ class Child1 extends Component {
       .stack()
       //      .keys(["GPT", "Gemini", "PaLM", "Claude", "LLaMA"])
 
-      .keys(["LLaMA", "Claude", "PaLM", "Gemini", "GPT"])
+      .keys(["GPT", "Gemini", "PaLM", "Claude", "LLaMA"])
       .offset(d3.stackOffsetWiggle);
     var stackedSeries = stack(data);
     var areaGenerator = d3
@@ -75,17 +75,6 @@ class Child1 extends Component {
     //// HOVER BAR CHART ////
     //////////////////////////////////////////////////////////
 
-    var tooltip = d3
-      .select(".mychart")
-      .select(".bar-chart")
-      .style("visibility", "hidden")
-      .append("rect")
-      .attr("width", 200)
-      .attr("height", 100)
-      .attr("stroke", "black") // Add black border
-      .attr("fill", "white"); // Ensure it's empty (transparent)
-
-    ///////////////////////////////////////////////////////////
     //// END HOVER BAR CHART ////
     //////////////////////////////////////////////////////////
 
@@ -98,17 +87,97 @@ class Child1 extends Component {
       .style("fill", (d, i) => colors[i])
       .attr("d", (d) => areaGenerator(d))
       .on("mouseover", function (event, d) {
-        tooltip.style("visibility", "visible").text(d.key); // Show key of the series
+        // MOUSEOVER used to handle the tooltip barchart
+
+        // color mapping for each models
+        var colors = {
+          GPT: "#e41a1c",
+          Gemini: "#377eb8",
+          PaLM: "#4daf4a",
+          Claude: "#984ea3",
+          LLaMA: "#ff7f00",
+        };
+
+        const nameModel = d.key; // getting model name
+        const dataModel = []; // used to store value from mouseover.
+        d.forEach((value) => {
+          // console.log(`for this key ${nameModel}`);
+          // console.log(value.data[nameModel]);
+          dataModel.push({
+            // accessing specific value for this model and storing data
+            date: value.data.Date,
+            value: value.data[nameModel],
+          });
+        });
+        // dataModel.forEach((item) => {
+        //   console.log(`Date: ${item.date}, Value: ${item.value}`);
+        // }); debug
+
+        var margin = { top: 30, right: 30, bottom: 70, left: 60 },
+          width = 360 - margin.left - margin.right,
+          height = 200 - margin.top - margin.bottom;
+
+        const xScale = d3
+          .scaleBand()
+          .domain(dataModel.map((d) => d.date))
+          .range([0, width])
+          .padding(0.1);
+
+        const yScale = d3
+          .scaleLinear()
+          .domain([0, d3.max(dataModel, (d) => d.value)])
+          .range([height, 0]);
+
+        const barChartSvg = d3.select(".bar-chart");
+        barChartSvg.html(""); // Clear previous content
+
+        // Append a new SVG for backgrouhnd
+        const svg = barChartSvg.append("svg");
+
+        // Add a white background rect
+        svg
+          .append("rect")
+
+          .attr("width", width + margin.left + margin.right)
+          .attr("height", height + margin.top + margin.bottom)
+          .attr("fill", "white")
+          .attr("stroke", "gray");
+
+        // BAR CHART
+
+        const chart = svg
+          .append("g")
+          .attr("transform", `translate(${margin.left},${margin.top})`);
+
+        chart
+          .selectAll(".bar")
+          .data(dataModel)
+          .join("rect")
+          .attr("class", "bar")
+          .attr("x", (d) => xScale(d.date))
+          .attr("y", (d) => yScale(d.value))
+          .attr("width", xScale.bandwidth())
+          .attr("height", (d) => height - yScale(d.value))
+          .attr("fill", colors[nameModel]);
+
+        chart
+          .append("g")
+          .attr("transform", `translate(0,${height})`)
+          .call(d3.axisBottom(xScale).tickFormat(d3.timeFormat("%b")));
+
+        chart.append("g").call(d3.axisLeft(yScale));
       })
+
       .on("mousemove", function (event) {
         const [mouseX, mouseY] = d3.pointer(event); // Get mouse position relative to the SVG
-        tooltip.attr(
+        d3.select(".bar-chart").attr(
           "transform",
-          `translate(${mouseX + 10}, ${mouseY + 10})` // Offset tooltip to avoid overlapping
+          `translate(${mouseX + 10}, ${mouseY + 10})` // +10 to prevent overlap
         );
       })
       .on("mouseout", function () {
-        tooltip.style("visibility", "hidden");
+        // clear chart
+        d3.select(".bar-chart").html("");
       });
 
     // END POPULATING
@@ -137,7 +206,7 @@ class Child1 extends Component {
       .attr("width", 20)
       .attr("height", 20)
       .attr("stroke", "black")
-      .attr("fill", "#e41a1c");
+      .attr("fill", "#ff7f00");
 
     svg
       .append("text")
@@ -152,7 +221,7 @@ class Child1 extends Component {
       .attr("width", 20)
       .attr("height", 20)
       .attr("stroke", "black")
-      .attr("fill", "#377eb8");
+      .attr("fill", "#984ea3");
 
     svg
       .append("text")
@@ -182,7 +251,7 @@ class Child1 extends Component {
       .attr("width", 20)
       .attr("height", 20)
       .attr("stroke", "black")
-      .attr("fill", "#984ea3");
+      .attr("fill", "#377eb8");
 
     svg
       .append("text")
@@ -196,7 +265,7 @@ class Child1 extends Component {
       .attr("width", 20)
       .attr("height", 20)
       .attr("stroke", "black")
-      .attr("fill", "#ff7f00");
+      .attr("fill", "#e41a1c");
 
     svg
       .append("text")
@@ -212,7 +281,7 @@ class Child1 extends Component {
   render() {
     return (
       <div className="mychart">
-        <svg width="700" height="400">
+        <svg width="1000" height="900" style={{ marginLeft: 45 + "px" }}>
           <g className="container"></g>
           <g className="bar-chart"></g>
         </svg>
